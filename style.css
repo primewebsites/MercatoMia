@@ -236,6 +236,24 @@ button { background: none; border: none; cursor: pointer; font: inherit; }
   transition: var(--transition);
 }
 .hero__cta:hover { background: var(--color-accent); }
+.hero__image {
+  max-width: 450px;         /* controla largura máxima */
+  width: 70%;              /* ocupa até o limite do container */
+  height: auto;             /* mantém proporção */
+  border-radius: 20px;      /* cantos arredondados */
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15); /* sombra suave */
+  object-fit: cover;        /* garante que a imagem preencha o espaço */
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  display: block;
+  margin: 0 auto;           /* centraliza caso esteja sozinha */
+}
+
+/* efeito ao passar o mouse */
+.hero__image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+}
+
 
 /* ============================
    PRODUCT GRID
@@ -280,6 +298,48 @@ button { background: none; border: none; cursor: pointer; font: inherit; }
   padding: 0.25rem 0.75rem;
   border-radius: 4px;
 }
+/* GRID DE CATEGORIAS */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  padding: 2rem 0;
+}
+
+/* CARD DE CATEGORIA */
+.category-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none; /* remove sublinhado do link */
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+/* IMAGEM DO CARD */
+.category-card__img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+/* HOVER - efeito bonito */
+.category-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+.category-card:hover .category-card__img {
+  transform: scale(1.05);
+}
+
 
 /* ============================
    TESTIMONIALS
