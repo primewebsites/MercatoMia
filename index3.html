@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MercatoMia — Sua curadoria de lifestyle</title>
+  <meta name="description" content="MercatoMia — loja fictícia de lifestyle. Exemplo de ecommerce responsivo para portfólio PrimeWeb." />
+  <style>
+    /* ====== Reset & variables ====== */
+    :root{
+      --bg: #ffffff;
+      --card:#333333;
+      --accent:#666666;
+      --muted:#004d4d;
+      --glass: #d4af37 ;
+      --radius:12px;
+      --ease:cubic-bezier(.2,.9,.3,1);
+      --text: #e6eef8;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background-color: #ffffff;
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.35;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1100px;margin:0 auto;padding:0 18px}
+
+    /* ====== Topbar ====== */
+    .topbar{background:#ffffff;border-bottom:1px solid #ffffff;font-size:13px}
+    .topbar__inner{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
+    .topbar__text{color:var(--muted);margin:0}
+    .topbar__links a{margin-left:12px;color:var(--muted)}
+
+    /* ====== Header ====== */
+    .site-header{padding:18px 0;position:sticky;top:0;z-index:40;background:linear-gradient(180deg, #ffffff, #ffffff);backdrop-filter: blur(6px);border-bottom:1px solid #ffffff}
+    .header__inner{display:flex;align-items:center;gap:18px}
+    .brand__logo{letter-spacing:2px}
+    .main-nav{flex:1}
+    .main-nav__list{display:flex;gap:18px;margin:0;padding:0;list-style:none}
+    .main-nav__link{color:var(--muted);font-weight:600}
+    .header-actions{display:flex;gap:10px;align-items:center}
+
+    /* icon buttons */
+    .action{width:44px;height:44px;display:grid;place-items:center;border-radius:10px;background:var(--glass);border:1px solid rgba(255,255,255,0.03);cursor:pointer}
+    .action:active{transform:scale(.98)}
+    .action:hover{background:rgba(59,130,246,0.08)}
+    .action--cart{position:relative}
+    .cart-count{position:absolute;right:-6px;top:-6px;background:#ffffff;color:white;border-radius:999px;font-size:12px;padding:3px 7px;min-width:22px;text-align:center}
+
+    /* user icon text */
+    #user-icon{cursor:pointer;padding:8px;display:inline-block;border-radius:8px;background:transparent}
+
+    /* ====== Search lateral panel (opens on hover/focus) ====== */
+    .search-wrapper{position:relative}
+    .search-panel{
+      position: absolute;
+      right: 0;
+      top: calc(100% + 10px);
+      width: 380px;
+      max-width: calc(100vw - 36px);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 12px 30px rgba(2,6,23,0.7);
+      backdrop-filter: blur(6px);
+      opacity:0;
+      transform: translateY(-6px) scale(.98);
+      pointer-events:none;
+      transition: transform .26s var(--ease), opacity .2s var(--ease);
+      border:1px solid rgba(255,255,255,0.04);
+      z-index:45;
+    }
+    .search-wrapper:hover .search-panel,
+    .search-wrapper:focus-within .search-panel{
+      opacity:1;
+      pointer-events:auto;
+      transform: translateY(0) scale(1);
+    }
+    .search-panel h4{margin:0 0 8px 0;font-size:14px;color:var(--muted)}
+    .search-row{display:flex;gap:8px}
+    .search-input{flex:1;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02);outline:none;color:var(--text)}
+    .search-input:focus{box-shadow:0 6px 20px rgba(59,130,246,0.08)}
+    .suggestions{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+    .suggestion{padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.02);color:var(--muted);cursor:pointer}
+    .suggestion:hover{background:rgba(255,255,255,0.02);color:var(--text)}
+
+    /* ====== Cart sidebar (fixed) ====== */
+    .cart-panel{
+      position:fixed;right:0;top:0;height:100vh;width:420px;max-width:100%;
+      transform:translateX(110%);transition:transform .36s var(--ease);
+      background:linear-gradient(180deg,#071228,#061426);padding:20px;box-shadow:-30px 0 60px rgba(0,0,0,0.6);z-index:60;
+    }
+    .cart-panel.open{transform:translateX(0)}
+    .cart-items{margin-top:12px;display:flex;flex-direction:column;gap:10px;overflow:auto;padding-right:6px;max-height:calc(100vh - 190px)}
+    .cart-item{display:flex;gap:10px;align-items:center;padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+    .cart-item img{width:56px;height:56px;object-fit:cover;border-radius:8px}
+    .cart-item .meta{flex:1}
+    .cart-item .meta b{display:block}
+    .qty-controls{display:flex;align-items:center;gap:8px}
+    .qty-btn{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px 8px;border-radius:8px;cursor:pointer}
+
+    .cart-footer{border-top:1px dashed rgba(255,255,255,0.03);padding-top:12px;display:flex;justify-content:space-between;align-items:center}
+    .checkout-btn{background:linear-gradient(90deg,var(--accent),#2563eb);padding:10px 14px;border-radius:10px;border:0;color:white;cursor:pointer;font-weight:700}
+
+    /* ====== Login modal (center) ====== */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:none;place-items:center;z-index:70}
+    .modal-backdrop.open{display:grid}
+    .modal{width:420px;max-width:calc(100%-40px);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:20px;box-shadow:0 10px 40px rgba(2,6,23,0.7);border:1px solid rgba(255,255,255,0.04)}
+    .modal h3{margin:0 0 12px 0}
+    .field{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+    .field input{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02);color:var(--text)}
+    .modal .actions{display:flex;justify-content:flex-end;gap:8px}
+    .btn{padding:8px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:600}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+    .btn-primary{background:var(--accent);color:white}
+
+    /* ====== Main / Hero / Products ====== */
+    .main{padding:28px 0}
+    .hero{padding:18px 0}
+    .hero__inner{display:flex;gap:24px;align-items:center}
+    .hero__copy{flex:1}
+    .hero__title{font-size:28px;margin:0 0 8px 0}
+    .hero__subtitle{color:var(--muted);margin:0 0 12px 0}
+    .btn--primary{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
+
+    .products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:18px}
+    .product-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);padding:12px;border-radius:12px;display:flex;flex-direction:column;gap:8px}
+    .product-card img{width:100%;height:150px;object-fit:cover;border-radius:10px}
+    .product-card__body{display:flex;justify-content:space-between;align-items:center;width:100%}
+    .add-btn{margin-top:auto;padding:10px;border-radius:10px;border:0;cursor:pointer;background:linear-gradient(90deg,var(--accent),#2563eb);color:white;font-weight:700}
+
+    /* ====== Footer ====== */
+    .site-footer{padding:28px 0;background:transparent;border-top:1px solid rgba(255,255,255,0.03);margin-top:28px}
+    .footer__inner{display:flex;gap:24px;flex-wrap:wrap}
+    .footer__col{flex:1;min-width:180px}
+    .footer__bar{border-top:1px solid rgba(255, 0, 0, 0.02);padding:12px 0;margin-top:18px;color:var(--muted);font-size:13px}
+
+    /* responsive */
+    @media (max-width:820px){
+      .hero__inner{flex-direction:column}
+      .main-nav__list{display:none}
+      .mobile-menu-btn{display:inline-block}
+    }
+    @media (max-width:480px){
+      .search-panel{right:6px;left:6px;top:calc(100% + 8px);width:auto}
+      .cart-panel{width:100%}
+      .modal{width:calc(100% - 28px)}
+    }
+
+    /* small util */
+    .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+  </style>
+</head>
+<body>
+
+  <div class="site">
+
+    <div class="topbar" aria-hidden="false">
+      <div class="container topbar__inner">
+        <p class="topbar__text">Frete grátis nas compras acima de R$300 • Troca fácil em 30 dias</p>
+        <nav class="topbar__links" aria-label="Links rápidos">
+          <a href="#" class="topbar__link">Ajuda</a>
+          <a href="#" class="topbar__link">Rastrear pedido</a>
+        </nav>
+      </div>
+    </div>
+
+    <header class="site-header" role="banner">
+      <div class="container header__inner">
+        <a href="/" class="brand" aria-label="MercatoMia — Ir para a página inicial">
+          <strong class="brand__logo">MERCATOMIA</strong>
+        </a>
+
+        <nav class="main-nav" role="navigation" aria-label="Menu principal">
+          <ul class="main-nav__list">
+            <li><a href="#" class="main-nav__link">Moda</a></li>
+            <li><a href="#" class="main-nav__link">Casa</a></li>
+            <li><a href="#" class="main-nav__link">Gourmet</a></li>
+          </ul>
+        </nav>
+
+        <div class="header-actions" aria-hidden="false">
+
+          <!-- Search: only icon visible; hover or focus opens panel -->
+          <div class="search-wrapper" style="display:inline-block;">
+            <button class="action" aria-haspopup="true" aria-expanded="false" id="icon-search" title="Pesquisar">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+
+            <div class="search-panel" role="region" aria-label="Pesquisa rápida" id="search-panel">
+              <h4>Pesquisar produtos</h4>
+              <div class="search-row">
+                <input class="search-input" id="search-input" placeholder="Digite o que procura..." aria-label="Pesquisar produtos"/>
+                <button class="action" id="search-go" title="Pesquisar">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+              <div class="suggestions" id="search-suggestions" aria-live="polite">
+                <div class="suggestion">Poncho de tricô feminino</div>
+                <div class="suggestion">Vinho tinto - Gama Especial</div>
+                <div class="suggestion">Tapete para sala</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- User icon -> opens modal -->
+          <div id="user-icon" title="Entrar / Criar conta" aria-haspopup="dialog" style="display:inline-block;">
+            👤
+          </div>
+
+          <!-- cart button -->
+          <button class="action action--cart" aria-haspopup="true" aria-expanded="false" aria-controls="cart-panel" id="btn-cart">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M6 6h15l-1.6 8H8.6L6 6z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1" fill="currentColor"/><circle cx="18" cy="20" r="1" fill="currentColor"/></svg>
+            <span class="cart-count" id="cart-count" aria-hidden="true">0</span>
+          </button>
+
+        </div>
+      </div>
+    </header>
+
+    <main class="main" id="content" role="main">
+      <div class="container">
+        <section class="hero">
+          <div class="hero__inner">
+            <div class="hero__copy">
+              <h1 class="hero__title">Descubra nossa nova coleção</h1>
+              <p class="hero__subtitle">Curadoria de peças atemporais e produtos que transformam o seu dia a dia.</p>
+              <a href="#produtos" class="btn--primary">COMPRE AGORA</a>
+            </div>
+            <div class="hero__visual" aria-hidden="true">
+              <img src="#" alt="Hero" style="width:360px;max-width:40vw;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,0.6)">
+            </div>
+          </div>
+        </section>
+
+        <section class="section produtos-destaque" id="produtos" aria-labelledby="produtos-title">
+          <h2 id="produtos-title" style="margin-top:24px">Produtos em destaque</h2>
+
+          <div class="products-grid" id="products-grid">
+            <!-- Product 1 -->
+            <div class="product-card" data-id="1" data-name="Manta de Tricô" data-price="283.00">
+              <img src="img/cesto.png" alt="Manta de Tricô">
+              <div class="product-card__body">
+                <strong>Manta de Tricô</strong>
+                <span>R$ 283,00</span>
+              </div>
+              <button class="add-btn" data-action="add">Adicionar ao carrinho</button>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="product-card" data-id="2" data-name="Cesto de Palha" data-price="183.00">
+              <img src="https://images.unsplash.com/photo-1503342217505-b0a15d2a3d3f?q=80&w=800&auto=format&fit=crop" alt="Cesto de Palha">
+              <div class="product-card__body">
+                <strong>Cesto de Palha</strong>
+                <span>R$ 183,00</span>
+              </div>
+              <button class="add-btn" data-action="add">Adicionar ao carrinho</button>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="product-card" data-id="3" data-name="Sandálias de Couro" data-price="183.00">
+              <img src="https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?q=80&w=800&auto=format&fit=crop" alt="Sandálias de Couro">
+              <div class="product-card__body">
+                <strong>Sandálias de Couro</strong>
+                <span>R$ 183,00</span>
+              </div>
+              <button class="add-btn" data-action="add">Adicionar ao carrinho</button>
+            </div>
+
+            <!-- Product 4 -->
+            <div class="product-card" data-id="4" data-name="Ecobag MercatoMia" data-price="83.00">
+              <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop" alt="Ecobag">
+              <div class="product-card__body">
+                <strong>Ecobag MercatoMia</strong>
+                <span>R$ 83,00</span>
+              </div>
+              <button class="add-btn" data-action="add">Adicionar ao carrinho</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer__inner">
+        <div class="footer__col">
+          <h3 class="footer__title">MercatoMia</h3>
+          <p class="footer__desc">Curadoria de lifestyle — peças selecionadas para um dia a dia melhor.</p>
+        </div>
+
+        <div class="footer__col">
+          <h4 class="footer__subtitle">Menu</h4>
+          <ul class="footer__links" style="list-style:none;padding:0">
+            <li><a href="#">Moda</a></li>
+            <li><a href="#">Casa</a></li>
+            <li><a href="#">Gourmet</a></li>
+            <li><a href="#">Sobre</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4 class="footer__subtitle">Suporte</h4>
+          <ul class="footer__links" style="list-style:none;padding:0">
+            <li><a href="#">Contato</a></li>
+            <li><a href="#">Entrega & Troca</a></li>
+            <li><a href="#">Política de Privacidade</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4 class="footer__subtitle">Pagamento</h4>
+          <p>Aceitamos cartões, pix e boleto.</p>
+        </div>
+      </div>
+
+      <div class="footer__bar">
+        <div class="container" style="display:flex;justify-content:space-between;align-items:center">
+          <small>© <span id="year"></span> MercatoMia — Todos os direitos reservados</small>
+          <div class="socials" style="display:flex;gap:8px">
+            <a href="#" aria-label="Instagram">IG</a>
+            <a href="#" aria-label="Pinterest">PT</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- CART SIDEBAR -->
+    <aside class="cart-panel" id="cart-panel" role="dialog" aria-label="Carrinho de compras" aria-hidden="true">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3>Seu carrinho</h3>
+        <button class="action" id="close-cart" aria-label="Fechar carrinho">✕</button>
+      </div>
+
+      <div class="cart-items" id="cart-items">
+        <div style="color:var(--muted);font-size:14px">Seu carrinho está vazio — adicione produtos.</div>
+      </div>
+
+      <div class="cart-footer">
+        <div>
+          <div style="font-size:13px;color:var(--muted)">Total</div>
+          <div style="font-size:18px;font-weight:700" id="cart-total">R$ 0,00</div>
+        </div>
+        <button class="checkout-btn" id="checkout-btn">Finalizar</button>
+      </div>
+    </aside>
+
+    <!-- LOGIN MODAL -->
+    <div class="modal-backdrop" id="login-backdrop" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" id="login-modal">
+        <h3 id="modal-title">Entrar na sua conta</h3>
+
+        <form id="login-form" onsubmit="return false;">
+          <div class="field">
+            <label for="email">E-mail</label>
+            <input id="email" type="email" required placeholder="seu@exemplo.com" />
+          </div>
+          <div class="field">
+            <label for="password">Senha</label>
+            <input id="password" type="password" required placeholder="••••••••" />
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+            <label style="font-size:13px;color:var(--muted)"><input type="checkbox" id="remember" style="margin-right:8px"> Lembrar</label>
+            <a href="#" id="toggle-signup" style="font-size:13px;color:var(--accent);text-decoration:none">Criar conta</a>
+          </div>
+
+          <div class="actions" style="margin-top:12px">
+            <button class="btn btn-ghost" id="close-login">Cancelar</button>
+            <button class="btn btn-primary" id="submit-login">Entrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div> <!-- /.site -->
+
+  <script>
+    /* ====== Utilities ====== */
+    const formatBR = v => {
+      const n = Number(v || 0);
+      return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+    };
+
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    /* ====== CART state & DOM refs ====== */
+    const state = { items: [] }; // {id,name,price,qty,img}
+    const cartPanel = document.getElementById('cart-panel');
+    const cartBtn = document.getElementById('btn-cart');
+    const closeCartBtn = document.getElementById('close-cart');
+    const cartItemsEl = document.getElementById('cart-items');
+    const cartTotalEl = document.getElementById('cart-total');
+    const cartCountEl = document.getElementById('cart-count');
+
+    function openCart(){
+      cartPanel.classList.add('open');
+      cartPanel.setAttribute('aria-hidden','false');
+      cartBtn.setAttribute('aria-expanded','true');
+    }
+    function closeCart(){
+      cartPanel.classList.remove('open');
+      cartPanel.setAttribute('aria-hidden','true');
+      cartBtn.setAttribute('aria-expanded','false');
+    }
+
+    cartBtn.addEventListener('click', () => {
+      if(cartPanel.classList.contains('open')) closeCart();
+      else openCart();
+    });
+    closeCartBtn.addEventListener('click', closeCart);
+
+    // Add-to-cart from product cards
+    document.querySelectorAll('.product-card').forEach(prod => {
+      const btn = prod.querySelector('.add-btn');
+      btn.addEventListener('click', () => {
+        const id = prod.dataset.id;
+        const name = prod.dataset.name;
+        const price = parseFloat(prod.dataset.price);
+        const img = prod.querySelector('img')?.src || '';
+        addToCart({id,name,price,img});
+        openCart();
+      });
+    });
+
+    function addToCart(product){
+      const found = state.items.find(i => i.id === product.id);
+      if(found) found.qty += 1;
+      else state.items.push({...product, qty:1});
+      renderCart();
+    }
+
+    function changeQty(id, delta){
+      const idx = state.items.findIndex(i => i.id === id);
+      if(idx === -1) return;
+      state.items[idx].qty += delta;
+      if(state.items[idx].qty <= 0) state.items.splice(idx,1);
+      renderCart();
+    }
+
+    function removeItem(id){
+      state.items = state.items.filter(i => i.id !== id);
+      renderCart();
+    }
+
+    function calculateTotal(){
+      return state.items.reduce((s,i)=> s + (i.price * i.qty), 0);
+    }
+
+    function renderCart(){
+      cartItemsEl.innerHTML = '';
+      if(state.items.length === 0){
+        cartItemsEl.innerHTML = '<div style="color:var(--muted);font-size:14px">Seu carrinho está vazio — adicione produtos.</div>';
+      } else {
+        state.items.forEach(item => {
+          const el = document.createElement('div');
+          el.className = 'cart-item';
+          el.innerHTML = `
+            <img src="${item.img}" alt="${item.name}">
+            <div class="meta">
+              <b>${item.name}</b>
+              <div style="color:var(--muted);font-size:13px">R$ ${Number(item.price).toFixed(2)} • Qtde: ${item.qty}</div>
+              <div style="margin-top:8px">
+                <button class="qty-btn" data-decrease="${item.id}">−</button>
+                <span style="padding:0 10px">${item.qty}</span>
+                <button class="qty-btn" data-increase="${item.id}">+</button>
+                <button class="qty-btn" data-remove="${item.id}" style="margin-left:10px;background:#ff7b7b;border:0;color:white">Remover</button>
+              </div>
+            </div>
+            <div style="font-weight:700">${formatBR(item.price * item.qty)}</div>
+          `;
+          cartItemsEl.appendChild(el);
+        });
+      }
+      cartTotalEl.textContent = formatBR(calculateTotal());
+      cartCountEl.textContent = state.items.reduce((s,i)=> s + i.qty, 0);
+    }
+
+    // Delegated clicks in cart for qty and remove
+    cartItemsEl.addEventListener('click', (e) => {
+      const inc = e.target.closest('[data-increase]');
+      const dec = e.target.closest('[data-decrease]');
+      const rem = e.target.closest('[data-remove]');
+      if(inc) changeQty(inc.getAttribute('data-increase'), +1);
+      if(dec) changeQty(dec.getAttribute('data-decrease'), -1);
+      if(rem) removeItem(rem.getAttribute('data-remove'));
+    });
+
+    document.getElementById('checkout-btn').addEventListener('click', () => {
+      if(state.items.length === 0){ alert('Seu carrinho está vazio.'); return; }
+      alert('Simulação de checkout — total ' + formatBR(calculateTotal()));
+    });
+
+    /* ====== LOGIN modal behavior ====== */
+    const userIcon = document.getElementById('user-icon');
+    const loginBackdrop = document.getElementById('login-backdrop');
+    const closeLogin = document.getElementById('close-login');
+    const toggleSignup = document.getElementById('toggle-signup');
+    const submitLogin = document.getElementById('submit-login');
+
+    userIcon.addEventListener('click', () => {
+      loginBackdrop.classList.add('open');
+      loginBackdrop.removeAttribute('aria-hidden');
+      document.getElementById('email').focus();
+    });
+
+    closeLogin.addEventListener('click', (e) => {
+      e.preventDefault();
+      loginBackdrop.classList.remove('open');
+      loginBackdrop.setAttribute('aria-hidden','true');
+    });
+
+    loginBackdrop.addEventListener('click', (e) => {
+      if(e.target === loginBackdrop){
+        loginBackdrop.classList.remove('open');
+        loginBackdrop.setAttribute('aria-hidden','true');
+      }
+    });
+
+    toggleSignup.addEventListener('click', (e) => {
+      e.preventDefault();
+      const title = document.getElementById('modal-title');
+      if(title.textContent.includes('Entrar')){
+        title.textContent = 'Criar nova conta';
+        toggleSignup.textContent = 'Já tenho conta';
+        submitLogin.textContent = 'Criar conta';
+      } else {
+        title.textContent = 'Entrar na sua conta';
+        toggleSignup.textContent = 'Criar conta';
+        submitLogin.textContent = 'Entrar';
+      }
+    });
+
+    submitLogin.addEventListener('click', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const pass = document.getElementById('password').value.trim();
+      if(!email || !pass){ alert('Preencha e-mail e senha.'); return; }
+      // Simula registro/login
+      alert(submitLogin.textContent + ' — ' + email);
+      loginBackdrop.classList.remove('open');
+      loginBackdrop.setAttribute('aria-hidden','true');
+    });
+
+    /* ====== SEARCH behavior (hover opens; keyboard accessible) ====== */
+    const searchInput = document.getElementById('search-input');
+    const suggestions = document.getElementById('search-suggestions');
+    const searchPanel = document.getElementById('search-panel');
+    const iconSearch = document.getElementById('icon-search');
+
+    // clicking icon toggles focus (so keyboard users can open)
+    iconSearch.addEventListener('click', () => {
+      searchInput.focus();
+    });
+
+    // click a suggestion
+    suggestions.addEventListener('click', (e) => {
+      const s = e.target.closest('.suggestion');
+      if(!s) return;
+      searchInput.value = s.textContent;
+      doSearch(s.textContent);
+    });
+
+    document.getElementById('search-go').addEventListener('click', () => doSearch(searchInput.value));
+    searchInput.addEventListener('keydown', e => { if(e.key === 'Enter') doSearch(searchInput.value); });
+
+    function doSearch(q){
+      if(!q || !q.trim()){ alert('Digite algo para pesquisar.'); return; }
+      const results = Array.from(document.querySelectorAll('.product-card'))
+        .filter(p => p.dataset.name.toLowerCase().includes(q.toLowerCase()));
+      if(results.length === 0){ alert('Nenhum produto encontrado para "'+q+'".'); return; }
+      results[0].scrollIntoView({behavior:'smooth', block:'center'});
+      results[0].style.outline = '3px solid rgba(59,130,246,0.25)';
+      setTimeout(()=> results[0].style.outline = 'none', 1800);
+    }
+
+    /* ====== Accessibility: Esc to close modals/panels ====== */
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape'){
+        if(cartPanel.classList.contains('open')) closeCart();
+        if(loginBackdrop.classList.contains('open')){
+          loginBackdrop.classList.remove('open');
+          loginBackdrop.setAttribute('aria-hidden','true');
+        }
+      }
+    });
+
+    // initial render
+    renderCart();
+  </script>
+
+</body>
+</html>

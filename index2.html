@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MercatoMia — Sua curadoria de lifestyle</title>
+  <meta name="description" content="MercatoMia — loja fictícia de lifestyle. Exemplo de ecommerce responsivo para portfólio PrimeWeb." />
+  <style>
+    /* ====== Reset & variables ====== */
+    :root{
+      --bg: #ffffff;
+      --card:#333333;
+      --accent:#666666;
+      --muted:#004d4d;
+      --glass: #d4af37 ;
+      --radius:12px;
+      --ease:cubic-bezier(.2,.9,.3,1);
+      --text: #e6eef8;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background-color: #ffffff;
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.35;
+    }
+    a{color:inherit;text-decoration:none}
+    .container{max-width:1100px;margin:0 auto;padding:0 18px}
+
+    /* ====== Topbar ====== */
+    .topbar{background:rgba(255,255,255,0.02);border-bottom:1px solid rgba(255,255,255,0.02);font-size:13px}
+    .topbar__inner{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
+    .topbar__text{color:var(--muted);margin:0}
+    .topbar__links a{margin-left:12px;color:var(--muted)}
+
+    /* ====== Header ====== */
+    .site-header{padding:18px 0;position:sticky;top:0;z-index:40;background:linear-gradient(180deg, rgba(7,16,35,0.6), rgba(7,16,35,0.3));backdrop-filter: blur(6px);border-bottom:1px solid rgba(255,255,255,0.03)}
+    .header__inner{display:flex;align-items:center;gap:18px}
+    .brand__logo{letter-spacing:2px}
+    .main-nav{flex:1}
+    .main-nav__list{display:flex;gap:18px;margin:0;padding:0;list-style:none}
+    .main-nav__link{color:var(--muted);font-weight:600}
+    .header-actions{display:flex;gap:10px;align-items:center}
+
+    .action{width:44px;height:44px;display:grid;place-items:center;border-radius:10px;background:var(--glass);border:1px solid rgba(255,255,255,0.03);cursor:pointer}
+    .action:active{transform:scale(.98)}
+    .action:hover{background:rgba(59,130,246,0.08)}
+    .action--cart{position:relative}
+    .cart-count{position:absolute;right:-6px;top:-6px;background:#ff5b5b;color:white;border-radius:999px;font-size:12px;padding:3px 7px;min-width:22px;text-align:center}
+
+    #user-icon{cursor:pointer;padding:8px;display:inline-block;border-radius:8px;background:transparent}
+
+    /* ====== Search panel ====== */
+    .search-wrapper{position:relative}
+    .search-panel{
+      position: absolute;
+      right: 0;
+      top: calc(100% + 10px);
+      width: 380px;
+      max-width: calc(100vw - 36px);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 12px 30px rgba(2,6,23,0.7);
+      backdrop-filter: blur(6px);
+      opacity:0;
+      transform: translateY(-6px) scale(.98);
+      pointer-events:none;
+      transition: transform .26s var(--ease), opacity .2s var(--ease);
+      border:1px solid rgba(255,255,255,0.04);
+      z-index:45;
+    }
+    .search-wrapper:hover .search-panel,
+    .search-wrapper:focus-within .search-panel{
+      opacity:1;
+      pointer-events:auto;
+      transform: translateY(0) scale(1);
+    }
+    .search-panel h4{margin:0 0 8px 0;font-size:14px;color:var(--muted)}
+    .search-row{display:flex;gap:8px}
+    .search-input{flex:1;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:rgba(255,255,255,0.02);outline:none;color:var(--text)}
+    .suggestions{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+    .suggestion{padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.02);color:var(--muted);cursor:pointer}
+    .suggestion:hover{background:rgba(255,255,255,0.02);color:var(--text)}
+
+    /* ====== Cart ====== */
+    .cart-panel{
+      position:fixed;right:0;top:0;height:100vh;width:420px;max-width:100%;
+      transform:translateX(110%);transition:transform .36s var(--ease);
+      background:linear-gradient(180deg,#071228,#061426);padding:20px;box-shadow:-30px 0 60px rgba(0,0,0,0.6);z-index:60;
+    }
+    .cart-panel.open{transform:translateX(0)}
+    .cart-items{margin-top:12px;display:flex;flex-direction:column;gap:10px;overflow:auto;padding-right:6px;max-height:calc(100vh - 190px)}
+    .cart-item{display:flex;gap:10px;align-items:center;padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+    .cart-item img{width:56px;height:56px;object-fit:cover;border-radius:8px}
+    .meta{flex:1}
+    .qty-controls{display:flex;align-items:center;gap:8px}
+    .qty-btn{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px 8px;border-radius:8px;cursor:pointer}
+    .cart-footer{border-top:1px dashed rgba(255,255,255,0.03);padding-top:12px;display:flex;justify-content:space-between;align-items:center}
+    .checkout-btn{background:linear-gradient(90deg,var(--accent),#2563eb);padding:10px 14px;border-radius:10px;border:0;color:white;cursor:pointer;font-weight:700}
+
+    /* ====== Modal ====== */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.6);display:none;place-items:center;z-index:70}
+    .modal-backdrop.open{display:grid}
+    .modal{width:420px;max-width:calc(100%-40px);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:20px;box-shadow:0 10px 40px rgba(2,6,23,0.7);border:1px solid rgba(255,255,255,0.04)}
+
+    /* ====== Main ====== */
+    .main{padding:28px 0}
+    .hero__inner{display:flex;gap:24px;align-items:center}
+    .products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:18px}
+    .product-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);padding:12px;border-radius:12px;display:flex;flex-direction:column;gap:8px}
+    .product-card img{width:100%;height:150px;object-fit:cover;border-radius:10px}
+    .add-btn{margin-top:auto;padding:10px;border-radius:10px;border:0;cursor:pointer;background:linear-gradient(90deg,var(--accent),#2563eb);color:white;font-weight:700}
+
+    .site-footer{padding:28px 0;margin-top:28px;border-top:1px solid rgba(255,255,255,0.03)}
+    .footer__bar{border-top:1px solid rgba(255,0,0,0.02);padding:12px 0;margin-top:18px;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="site">
+    <!-- HEADER -->
+    <header class="site-header">
+      <div class="container header__inner">
+        <a href="/" class="brand"><strong class="brand__logo">MERCATOMIA</strong></a>
+        <nav class="main-nav">
+          <ul class="main-nav__list">
+            <li><a href="#">Moda</a></li>
+            <li><a href="#">Casa</a></li>
+            <li><a href="#">Gourmet</a></li>
+          </ul>
+        </nav>
+        <div class="header-actions">
+          <div class="search-wrapper">
+            <button class="action">🔍</button>
+            <div class="search-panel">
+              <h4>Pesquisar produtos</h4>
+              <div class="search-row">
+                <input class="search-input" placeholder="Digite o que procura..."/>
+                <button class="action">OK</button>
+              </div>
+            </div>
+          </div>
+          <div id="user-icon">👤</div>
+          <button class="action action--cart" id="btn-cart">
+            🛒 <span class="cart-count" id="cart-count">0</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <main class="main">
+      <div class="container">
+        <section class="hero">
+          <div class="hero__inner">
+            <div>
+              <h1>Descubra nossa nova coleção</h1>
+              <p>Peças atemporais e produtos que transformam o seu dia a dia.</p>
+              <a href="#produtos" class="btn--primary">COMPRE AGORA</a>
+            </div>
+            <div><img src="https://images.unsplash.com/photo-1520975912234-7a6b5f6a7a28?q=80&w=600" alt="Hero" style="border-radius:12px;width:360px"></div>
+          </div>
+        </section>
+
+        <!-- PRODUCTS -->
+        <section id="produtos">
+          <h2>Produtos em destaque</h2>
+          <div class="products-grid">
+            <div class="product-card" data-id="1" data-name="Manta de Tricô" data-price="283.00">
+              <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=600" alt="">
+              <strong>Manta de Tricô</strong><span>R$ 283,00</span>
+              <button class="add-btn">Adicionar</button>
+            </div>
+            <div class="product-card" data-id="2" data-name="Cesto de Palha" data-price="183.00">
+              <img src="https://images.unsplash.com/photo-1503342217505-b0a15d2a3d3f?q=80&w=600" alt="">
+              <strong>Cesto de Palha</strong><span>R$ 183,00</span>
+              <button class="add-btn">Adicionar</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <div class="footer__bar"><div class="container">© <span id="year"></span> MercatoMia</div></div>
+    </footer>
+
+    <!-- CART -->
+    <aside class="cart-panel" id="cart-panel">
+      <div style="display:flex;justify-content:space-between">
+        <h3>Seu carrinho</h3><button id="close-cart">✕</button>
+      </div>
+      <div class="cart-items" id="cart-items"><div>Seu carrinho está vazio</div></div>
+      <div class="cart-footer">
+        <div><div>Total</div><div id="cart-total">R$ 0,00</div></div>
+        <button class="checkout-btn">Finalizar</button>
+      </div>
+    </aside>
+
+    <!-- LOGIN -->
+    <div class="modal-backdrop" id="login-backdrop">
+      <div class="modal">
+        <h3>Entrar na sua conta</h3>
+        <form id="login-form">
+          <input type="email" placeholder="E-mail" required>
+          <input type="password" placeholder="Senha" required>
+          <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+            <button type="button" id="close-login">Cancelar</button>
+            <button type="submit">Entrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<script>
+const formatBR = v => Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const state = { items: [] };
+const cartPanel = document.getElementById('cart-panel');
+const cartBtn = document.getElementById('btn-cart');
+const closeCartBtn = document.getElementById('close-cart');
+const cartItemsEl = document.getElementById('cart-items');
+const cartTotalEl = document.getElementById('cart-total');
+const cartCountEl = document.getElementById('cart-count');
+
+function openCart(){cartPanel.classList.add('open')}
+function closeCart(){cartPanel.classList.remove('open')}
+cartBtn.onclick=()=>cartPanel.classList.contains('open')?closeCart():openCart();
+closeCartBtn.onclick=closeCart;
+
+function renderCart(){
+  cartItemsEl.innerHTML='';
+  if(state.items.length===0){cartItemsEl.innerHTML='<div>Seu carrinho está vazio</div>'}
+  let total=0;
+  state.items.forEach(item=>{
+    total+=item.price*item.qty;
+    const el=document.createElement('div');
+    el.className='cart-item';
+    el.innerHTML=`
+      <img src="${item.img}" alt="">
+      <div class="meta"><b>${item.name}</b><span>${formatBR(item.price)}</span></div>
+      <div class="qty-controls">
+        <button class="qty-btn" data-action="dec">-</button>
+        <span>${item.qty}</span>
+        <button class="qty-btn" data-action="inc">+</button>
+      </div>`;
+    el.querySelectorAll('.qty-btn').forEach(btn=>{
+      btn.onclick=()=>{
+        if(btn.dataset.action==='inc')item.qty++;
+        else item.qty=Math.max(1,item.qty-1);
+        renderCart();
+      };
+    });
+    cartItemsEl.appendChild(el);
+  });
+  cartTotalEl.textContent=formatBR(total);
+  cartCountEl.textContent=state.items.reduce((a,b)=>a+b.qty,0);
+}
+
+document.querySelectorAll('.product-card').forEach(prod=>{
+  prod.querySelector('.add-btn').onclick=()=>{
+    const id=prod.dataset.id;
+    const existing=state.items.find(i=>i.id===id);
+    if(existing)existing.qty++;
+    else state.items.push({id,name:prod.dataset.name,price:+prod.dataset.price,img:prod.querySelector('img').src,qty:1});
+    renderCart();openCart();
+  };
+});
+
+// LOGIN MODAL
+const userIcon=document.getElementById('user-icon');
+const loginBackdrop=document.getElementById('login-backdrop');
+const closeLogin=document.getElementById('close-login');
+userIcon.onclick=()=>loginBackdrop.classList.add('open');
+closeLogin.onclick=()=>loginBackdrop.classList.remove('open');
+document.getElementById('login-form').onsubmit=(e)=>{e.preventDefault();alert('Login simulado!');loginBackdrop.classList.remove('open');};
+</script>
+</body>
+</html>
