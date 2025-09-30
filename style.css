@@ -254,6 +254,32 @@ button { background: none; border: none; cursor: pointer; font: inherit; }
   transform: scale(1.05);
   box-shadow: 0 12px 30px rgba(0,0,0,0.25);
 }
+@media (max-width: 768px) {
+  .hero__inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;  /* espaçamento menor */
+  }
+
+  .hero__title {
+    font-size: 2rem;  /* reduz tamanho do título */
+  }
+
+  .hero__subtitle {
+    font-size: 1rem;  /* reduz subtítulo */
+  }
+
+  .hero__image {
+    width: 90%;        /* ocupa menos espaço horizontal */
+    max-width: 300px;  /* limite para mobile */
+    margin: 0 auto;
+  }
+
+  .hero__cta {
+    padding: 0.6rem 1.2rem;  /* botão menor */
+    font-size: 0.9rem;
+  }
+}
 
 
 /* ============================
@@ -411,6 +437,24 @@ button { background: none; border: none; cursor: pointer; font: inherit; }
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+@media (max-width: 768px) {
+  .footer__inner {
+    grid-template-columns: 1fr;  /* transforma em uma coluna */
+    text-align: center;
+    gap: 1.5rem;
+  }
+
+  .footer__links a {
+    display: inline-block;       /* centraliza links */
+    margin: 0.25rem 0;
+  }
+
+  .footer__bar-inner {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
 }
 
 /* ============================
