@@ -94,7 +94,7 @@ body {
 img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 ul { list-style: none; }
-button { background: none; border: none; cursor: pointer; font: inherit; }
+button { background: none; border: none; cursor: pointer; font: inherit; color: white; }
 
 /* ============================
    CONTAINERS & LAYOUT
