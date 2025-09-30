@@ -414,7 +414,7 @@ button { background: none; border: none; cursor: pointer; font: inherit; }
 }
 
 /* ============================
-   SIDE CART - ESTILO COMPLETO
+   SIDE CART - ESTILO COMPLETO RESPONSIVO
    ============================ */
 #cart-toggle {
   position: relative;
@@ -422,7 +422,14 @@ button { background: none; border: none; cursor: pointer; font: inherit; }
   border: none;
   cursor: pointer;
   font-size: 1.2rem;
-   margin-right: 120px;  /* afasta só o ícone do carrinho */
+  margin-right: 120px;  /* afasta o ícone do carrinho no desktop */
+}
+
+/* Ajuste mobile do ícone */
+@media (max-width: 768px) {
+  #cart-toggle {
+    margin-right: 0; /* remove o afastamento grande no mobile */
+  }
 }
 
 .cart-count {
@@ -439,8 +446,9 @@ button { background: none; border: none; cursor: pointer; font: inherit; }
 .side-cart {
   position: fixed;
   top: 0;
-  right: -400px;
-  width: 350px;
+  right: -100%;          /* começa escondido no mobile e desktop */
+  width: 350px;           /* largura padrão desktop */
+  max-width: 100%;
   height: 100%;
   background: #fff;
   box-shadow: -2px 0 12px rgba(0,0,0,0.2);
@@ -448,10 +456,12 @@ button { background: none; border: none; cursor: pointer; font: inherit; }
   z-index: 2000;
   display: flex;
   flex-direction: column;
+  pointer-events: none;   /* desativa clique quando fechado */
 }
 
 .side-cart.active {
   right: 0;
+  pointer-events: auto;   /* habilita clique quando aberto */
 }
 
 .side-cart__header {
@@ -481,7 +491,6 @@ button { background: none; border: none; cursor: pointer; font: inherit; }
   margin-bottom: 1rem;
   border-bottom: 1px solid #eee;
   padding-bottom: 0.5rem;
-  
 }
 
 .side-cart__item img {
@@ -489,7 +498,6 @@ button { background: none; border: none; cursor: pointer; font: inherit; }
   height: 60px;
   object-fit: cover;
   border-radius: 4px;
- 
 }
 
 .side-cart__item-title {
@@ -506,29 +514,24 @@ button { background: none; border: none; cursor: pointer; font: inherit; }
 .side-cart__item-controls button {
   font-size: 0.9rem;
   padding: 6px 10px;
-  border: none;                     /* sem borda para visual minimalista */
-  border-radius: 8px;               /* cantos arredondados */
-  background-color: #f5f5f5;        /* fundo suave */
+  border: none;
+  border-radius: 8px;
+  background-color: #f5f5f5;
   color: #333;
   cursor: pointer;
-  transition: all 0.25s ease;       /* transição suave */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* sombra leve para efeito flutuante */
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .side-cart__item-controls button:hover {
-  background-color: #e0e0e0;        /* hover sutil */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* sombra maior ao passar o mouse */
-  transform: translateY(-2px);      /* leve elevação ao hover */
+  background-color: var(--color-light);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
 }
 
 .side-cart__item-controls button:active {
-  background-color: #dcdcdc;        /* efeito ao clicar */
-  transform: translateY(0) scale(0.97); /* feedback ao clicar */
-}
-
-
-.side-cart__item-controls button:hover {
-  background: var(--color-light);
+  background-color: #dcdcdc;
+  transform: translateY(0) scale(0.97);
 }
 
 .side-cart__item-price {
@@ -605,10 +608,14 @@ button { background: none; border: none; cursor: pointer; font: inherit; }
   background: var(--color-accent);
 }
 
-/* RESPONSIVE SIDE CART */
+/* RESPONSIVO SIDE CART */
 @media (max-width: 768px) {
   .side-cart {
-    width: 80%;
+    width: 50%;        /* diminuiu de 80% para 70% da tela */
+    right: -50%;       /* começa escondido corretamente */
+  }
+  .side-cart.active {
+    right: 0;          /* desliza para a tela */
   }
   .side-cart__item img {
     width: 50px;
@@ -617,16 +624,6 @@ button { background: none; border: none; cursor: pointer; font: inherit; }
 }
 
 
-/* ============================
-   RESPONSIVE
-   ============================ */
-@media (max-width: 768px) {
-  .main-nav { display: none; }
-  .mobile-menu-btn { display: flex; }
-  .hero__inner { flex-direction: column; text-align: center; }
-  .newsletter__form { flex-direction: column; }
-  .newsletter__form input { min-width: 100%; }
-}
 .search-bar {
   position: absolute;
   top: 0;
