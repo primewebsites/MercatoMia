@@ -103,89 +103,167 @@ function initSearch() {
   }
 }
 
-/* =============================
-   Carrinho
-============================= */
-function initCart() {
-  const state = { items: [] };
-  const cartPanel = document.getElementById("cart-panel");
-  const cartBtn = document.getElementById("btn-cart");
-  const closeCartBtn = document.getElementById("close-cart");
-  const cartItemsEl = document.getElementById("cart-items");
-  const cartTotalEl = document.getElementById("cart-total");
-  const cartCountEl = document.getElementById("cart-count");
+document.addEventListener("DOMContentLoaded", () => {
+  // ============================
+  // ELEMENTOS
+  // ============================
+  const cartToggle = document.getElementById("cart-toggle");
+  const cartClose = document.getElementById("close-cart");
+  const sideCart = document.getElementById("side-cart");
+  const cartItemsContainer = document.getElementById("cart-items");
+  const cartSubtotal = document.getElementById("cart-total"); // ajustado para seu HTML
+  const clearCartBtn = document.getElementById("clear-cart");
+  const checkoutBtn = document.querySelector(".side-cart__checkout"); // class
+  const couponInput = document.getElementById("coupon-code"); // id ajustado
+  const applyCouponBtn = document.getElementById("apply-coupon");
+  const cartCountEl = document.querySelector(".cart-count");
 
+  let cart = [];
+  let discount = 0;
+
+  // ============================
+  // ABRIR/FECHAR CARRINHO
+  // ============================
+  const openCart = () => sideCart.classList.add("active");
+  const closeCart = () => sideCart.classList.remove("active");
+
+  cartToggle.addEventListener("click", () => {
+    sideCart.classList.toggle("active");
+  });
+  cartClose.addEventListener("click", closeCart);
+
+  // ============================
+  // ADICIONAR PRODUTO
+  // ============================
+  document.querySelectorAll(".product-card__link").forEach(product => {
+    product.addEventListener("click", (e) => {
+      e.preventDefault();
+      const title = product.querySelector("h3").innerText;
+      const priceText = product.querySelector("p").innerText.replace("R$", "").replace(",", ".").trim();
+      const price = parseFloat(priceText);
+      const imgSrc = product.querySelector("img").src;
+      addToCart({ title, price, imgSrc });
+    });
+  });
+
+  function addToCart(item) {
+    const existingItem = cart.find(ci => ci.title === item.title);
+    if (existingItem) {
+      existingItem.quantity++;
+    } else {
+      cart.push({ ...item, quantity: 1 });
+    }
+
+    renderCart();
+    openCart(); // garante abrir sempre ao adicionar
+  }
+
+  // ============================
+  // RENDERIZAR CARRINHO
+  // ============================
   function renderCart() {
-    cartItemsEl.innerHTML = "";
-    if (state.items.length === 0) {
-      cartItemsEl.innerHTML = '<div style="color:var(--muted);font-size:14px">Seu carrinho está vazio — adicione produtos.</div>';
-      cartTotalEl.textContent = "R$ 0,00";
-      cartCountEl.textContent = "0";
+    cartItemsContainer.innerHTML = "";
+    let subtotal = 0;
+
+    if (cart.length === 0) {
+      cartItemsContainer.innerHTML = `<div style="color:var(--muted);font-size:14px">Seu carrinho está vazio — adicione produtos.</div>`;
+      cartSubtotal.innerText = "R$ 0,00";
+      cartCountEl.innerText = "0";
       return;
     }
 
-    let total = 0;
-    state.items.forEach((item) => {
-      total += item.price * item.qty;
-      const el = document.createElement("div");
-      el.className = "cart-item";
-      el.innerHTML = `
-        <img src="${item.img}" alt="${item.name}" />
-        <div>
-          <div>${item.name}</div>
-          <div>${item.qty} x R$ ${item.price.toFixed(2)}</div>
+    cart.forEach((item, index) => {
+      subtotal += item.price * item.quantity;
+
+      const div = document.createElement("div");
+      div.classList.add("side-cart__item");
+      div.innerHTML = `
+        <img src="${item.imgSrc}" alt="${item.title}">
+        <div class="side-cart__item-title">${item.title}</div>
+        <div class="side-cart__item-controls">
+          <button class="decrease" data-index="${index}">-</button>
+          <span>${item.quantity}</span>
+          <button class="increase" data-index="${index}">+</button>
+          <button class="remove" data-index="${index}">Remover</button>
         </div>
-        <button onclick="removeItem('${item.id}')">✕</button>
+        <div class="side-cart__item-price">R$ ${(item.price * item.quantity).toFixed(2).replace(".", ",")}</div>
       `;
-      cartItemsEl.appendChild(el);
+      cartItemsContainer.appendChild(div);
     });
 
-    cartTotalEl.textContent = `R$ ${total.toFixed(2)}`;
-    cartCountEl.textContent = state.items.reduce((s, i) => s + i.qty, 0);
+    subtotal -= discount;
+    if (subtotal < 0) subtotal = 0;
+    cartSubtotal.innerText = `R$ ${subtotal.toFixed(2).replace(".", ",")}`;
+
+    updateCartCount();
   }
 
-  function addToCart(product) {
-    const found = state.items.find((i) => i.id === product.id);
-    if (found) found.qty++;
-    else state.items.push({ ...product, qty: 1 });
-    renderCart();
-    openCart();
-  }
-
-  function openCart() {
-    cartPanel.classList.add("open");
-    cartPanel.setAttribute("aria-hidden", "false");
-    cartBtn.setAttribute("aria-expanded", "true");
-  }
-
-  function closeCart() {
-    cartPanel.classList.remove("open");
-    cartPanel.setAttribute("aria-hidden", "true");
-    cartBtn.setAttribute("aria-expanded", "false");
-  }
-
-  cartBtn?.addEventListener("click", () => {
-    if (cartPanel.classList.contains("open")) closeCart();
-    else openCart();
-  });
-  closeCartBtn?.addEventListener("click", closeCart);
-
-  // Ativar botões nos produtos
-  document.querySelectorAll(".product-card").forEach((prod) => {
-    const btn = prod.querySelector(".add-btn");
-    if (!btn) return;
-    btn.addEventListener("click", () => {
-      const id = prod.dataset.id;
-      const name = prod.dataset.name;
-      const price = parseFloat(prod.dataset.price);
-      const img = prod.querySelector("img")?.src || "";
-      addToCart({ id, name, price, img });
-    });
+  // ============================
+  // CONTROLES DOS ITENS (DELEGATION)
+  // ============================
+  cartItemsContainer.addEventListener("click", (e) => {
+    const index = e.target.dataset.index;
+    if (e.target.classList.contains("increase")) {
+      cart[index].quantity++;
+      renderCart();
+    } else if (e.target.classList.contains("decrease")) {
+      if (cart[index].quantity > 1) {
+        cart[index].quantity--;
+      } else {
+        cart.splice(index, 1);
+      }
+      renderCart();
+    } else if (e.target.classList.contains("remove")) {
+      cart.splice(index, 1);
+      renderCart();
+    }
   });
 
-  // remover global
-  window.removeItem = (id) => {
-    state.items = state.items.filter((i) => i.id !== id);
+  // ============================
+  // LIMPAR CARRINHO
+  // ============================
+  clearCartBtn.addEventListener("click", () => {
+    cart = [];
+    discount = 0;
     renderCart();
-  };
-}
+  });
+
+  // ============================
+  // APLICAR CUPOM
+  // ============================
+  applyCouponBtn.addEventListener("click", () => {
+    const code = couponInput.value.trim();
+    if (code === "DESCONTO10") {
+      discount = 10;
+      renderCart();
+      alert("Cupom aplicado! R$10 de desconto.");
+    } else {
+      alert("Cupom inválido");
+    }
+  });
+
+  // ============================
+  // ATUALIZA CARRINHO NO ÍCONE
+  // ============================
+  function updateCartCount() {
+    const count = cart.reduce((acc, item) => acc + item.quantity, 0);
+    cartCountEl.innerText = count;
+  }
+
+  // ============================
+  // FINALIZAR COMPRA
+  // ============================
+  checkoutBtn.addEventListener("click", () => {
+    if (cart.length === 0) {
+      alert("Seu carrinho está vazio!");
+      return;
+    }
+    alert("Checkout realizado com sucesso!");
+    cart = [];
+    discount = 0;
+    renderCart();
+  });
+
+  // Render inicial
+  renderCart();
+});

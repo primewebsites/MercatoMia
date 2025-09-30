@@ -65,6 +65,35 @@
             </div>
           </div>
         </div>
+<!-- Ícone do carrinho -->
+<button id="cart-toggle" class="action--icon" aria-label="Abrir carrinho">
+  🛒<span class="cart-count" id="cart-count">0</span>
+</button>
+
+<!-- Side Cart -->
+<div class="side-cart" id="side-cart">
+  <div class="side-cart__header">
+    <h3>Carrinho</h3>
+    <button id="close-cart" aria-label="Fechar carrinho">✖</button>
+  </div>
+
+  <div class="side-cart__body" id="cart-items">
+    <!-- Itens adicionados aparecerão aqui via JS -->
+  </div>
+
+  <div class="side-cart__footer">
+    <div class="coupon">
+      <input type="text" id="coupon-code" placeholder="Cupom de desconto" />
+      <button id="apply-coupon">Aplicar</button>
+    </div>
+    <div class="side-cart__subtotal">
+      <span>Total:</span>
+      <span id="cart-total">R$0,00</span>
+    </div>
+    <button id="clear-cart">Remover todos</button>
+    <button class="side-cart__checkout">Finalizar Compra</button>
+  </div>
+</div>
 
         <!-- Ícone do login -->
         <i id="user-icon"></i>
@@ -88,6 +117,7 @@
 
       </div>
     </div>
+    
   </header>
 
   <!-- Hero -->
@@ -130,9 +160,9 @@
           </li>
           <li class="product-card">
             <a href="#" class="product-card__link">
-              <img src="img/poncho.png" alt="Sandálias de Couro" />
+              <img src="img/poncho.png" alt="Poncho" />
               <div class="product-card__body">
-                <h3>Sandálias de Couro</h3>
+                <h3>Poncho de Trico</h3>
                 <p>R$ 183,00</p>
               </div>
             </a>
